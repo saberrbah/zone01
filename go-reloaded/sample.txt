@@ -1,1 +1,1 @@
-Hello world
+Simply add 42 (hex) and 10
