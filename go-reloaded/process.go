@@ -13,6 +13,9 @@ func processText(text string) string {
 		line = convertUp(line)
 		line = convertLow(line)
 		line = convertCap(line)
+		line = fixPunctuation(line)
+		line = fixQuotes(line)
+		line = fixArticles(line)
 		lines[i] = line
 	}
 
