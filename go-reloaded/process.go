@@ -1,23 +1,22 @@
 package main
 
-import (
-	"strings"
-)
+import "strings"
 
 func processText(text string) string {
-	lines := strings.Split(text, "\n")
+    lines := strings.Split(text, "\n")
 
-	for i, line := range lines {
-		line = convertHex(line)
-		line = convertBin(line)
-		line = convertUp(line)
-		line = convertLow(line)
-		line = convertCap(line)
-		line = fixPunctuation(line)
-		line = fixQuotes(line)
-		line = fixArticles(line)
-		lines[i] = line
-	}
+    for i, line := range lines {
+        line = convertHex(line)
+        line = convertBin(line)
+        line = convertUp(line)
+        line = convertLow(line)
+        line = convertCap(line)
+        line = fixPunctuation(line)
+        line = fixQuotes(line)
+        line = fixArticles(line)
 
-	return strings.Join(lines, "\n")
+        lines[i] = line
+    }
+
+    return strings.Join(lines, "\n")
 }
