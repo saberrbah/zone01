@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -48,8 +47,9 @@ func convertLow(text string) string {
 			markerLen = 2
 		}
 
+		// Not enough words before the marker: use the ones that exist.
 		if count > i {
-			continue
+			count = i
 		}
 
 		for j := i - count; j < i; j++ {

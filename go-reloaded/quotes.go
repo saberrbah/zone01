@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -42,7 +41,7 @@ func fixQuotes(text string) string {
 
 			// Prevent the closing quote from joining two words.
 			if i+1 < len(runes) &&
-				(unicode.IsLetter(runes[i+1]) || unicode.IsDigit(runes[i+1])) {
+				(unicode.IsLetter(runes[i+1]) || unicode.IsDigit(runes[i+1]) || runes[i+1] == '\'') {
 				result.WriteRune(' ')
 			}
 		}

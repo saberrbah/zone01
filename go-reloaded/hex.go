@@ -18,7 +18,10 @@ func convertHex(text string) string {
 				continue
 			}
 
-			words[i-1] = strconv.FormatInt(number, 10)
+			// Keep punctuation attached to the marker, like (hex).
+			punctuation := strings.TrimPrefix(words[i], "(hex)")
+
+			words[i-1] = strconv.FormatInt(number, 10) + punctuation
 			words = append(words[:i], words[i+1:]...)
 			i--
 		}
