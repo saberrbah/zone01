@@ -17,7 +17,11 @@ func processText(text string) string {
 		trimmed = normalizeMarkers(trimmed)
 		trimmed = fixPunctuation(trimmed)
 		trimmed = fixQuotes(trimmed)
-		trimmed = convertMarkers(trimmed)
+		trimmed = convertHex(trimmed)
+		trimmed = convertBin(trimmed)
+		trimmed = convertUp(trimmed)
+		trimmed = convertLow(trimmed)
+		trimmed = convertCap(trimmed)
 		trimmed = fixArticles(trimmed)
 
 		// A line starting with punctuation has no indentation.

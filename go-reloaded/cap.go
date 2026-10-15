@@ -58,10 +58,16 @@ func convertCap(text string) string {
 		for j := i - count; j < i; j++ {
 			runes := []rune(strings.ToLower(words[j]))
 
-			if len(runes) > 0 {
-				runes[0] = unicode.ToUpper(runes[0])
-				words[j] = string(runes)
+			for k, r := range runes {
+				if unicode.IsLetter(r) {
+					runes[k] = unicode.ToUpper(r)
+					break
+				}
+				if unicode.IsDigit(r) {
+					break
+				}
 			}
+			words[j] = string(runes)
 		}
 
 		words = append(words[:i], words[i+markerLen:]...)
