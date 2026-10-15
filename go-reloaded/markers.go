@@ -1,10 +1,29 @@
 package main
 
 import (
+	"regexp"
 	"strconv"
 	"strings"
 	"unicode"
 )
+
+// markerPattern matches a marker with any spacing inside the parentheses,
+// like "( up )", "(up,3)" or "(  low  ,  2 )".
+var markerPattern = regexp.MustCompile(`\(\s*(hex|bin|up|low|cap)\s*(?:,\s*(-?\d+)\s*)?\)`)
+
+// normalizeMarkers rewrites every marker to its standard form:
+// "(up)" or "(up, 3)".
+func normalizeMarkers(text string) string {
+	return markerPattern.ReplaceAllStringFunc(text, func(match string) string {
+		parts := markerPattern.FindStringSubmatch(match)
+
+		if parts[2] == "" {
+			return "(" + parts[1] + ")"
+		}
+
+		return "(" + parts[1] + ", " + parts[2] + ")"
+	})
+}
 
 // convertMarkers applies (hex), (bin), (up), (low) and (cap) markers
 // from left to right, so every marker only sees the words before it.

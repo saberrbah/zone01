@@ -14,6 +14,7 @@ func processText(text string) string {
 
 		// Punctuation and quotes first, so markers like (up, 2)
 		// count real words only. Markers are then applied in order.
+		trimmed = normalizeMarkers(trimmed)
 		trimmed = fixPunctuation(trimmed)
 		trimmed = fixQuotes(trimmed)
 		trimmed = convertMarkers(trimmed)
