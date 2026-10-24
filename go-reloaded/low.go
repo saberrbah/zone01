@@ -9,60 +9,81 @@ func convertLow(text string) string {
 	words := strings.Fields(text)
 
 	for i := 0; i < len(words); i++ {
-		punctuation := ""
+		// Handle the exact (low) marker.
+		if words[i] == "(low)" {
+			if i > 0 {
+				words[i-1] = strings.ToLower(words[i-1])
+			}
 
-		// Handle punctuation attached to (low).
-		if strings.HasPrefix(words[i], "(low)") {
-			punctuation = strings.TrimPrefix(words[i], "(low)")
-			words[i] = "(low)"
-		}
-
-		if words[i] != "(low)" && !strings.HasPrefix(words[i], "(low,") {
+			words = append(words[:i], words[i+1:]...)
+			i--
 			continue
 		}
 
-		count := 1
-		markerLen := 1
-
-		if words[i] != "(low)" {
+		// Handle (low, number) when the number is separated by a space.
+		if words[i] == "(low," {
+			// Remove an incomplete marker.
 			if i+1 >= len(words) {
+				words = append(words[:i], words[i+1:]...)
+				i--
 				continue
 			}
 
-			numberToken := words[i+1]
-			closeIndex := strings.Index(numberToken, ")")
-			if closeIndex == -1 {
+			numberText := strings.TrimSuffix(words[i+1], ")")
+			count, err := strconv.Atoi(numberText)
+
+			// Remove both marker parts for invalid, zero, negative,
+			// or overflowing counts.
+			if err != nil || count <= 0 {
+				words = append(words[:i], words[i+2:]...)
+				i--
 				continue
 			}
 
-			n := numberToken[:closeIndex]
-			punctuation += numberToken[closeIndex+1:]
+			// Use only the available previous words.
+			if count > i {
+				count = i
+			}
 
-			var err error
-			count, err = strconv.Atoi(n)
-			if err != nil || count < 1 {
+			for j := i - count; j < i; j++ {
+				words[j] = strings.ToLower(words[j])
+			}
+
+			// Remove the marker and its number.
+			words = append(words[:i], words[i+2:]...)
+			i--
+			continue
+		}
+
+		// Handle (low,number) without a space.
+		if strings.HasPrefix(words[i], "(low,") &&
+			strings.HasSuffix(words[i], ")") {
+			numberText := strings.TrimSuffix(
+				strings.TrimPrefix(words[i], "(low,"),
+				")",
+			)
+			count, err := strconv.Atoi(numberText)
+
+			// Remove the marker if the count is invalid.
+			if err != nil || count <= 0 {
+				words = append(words[:i], words[i+1:]...)
+				i--
 				continue
 			}
 
-			markerLen = 2
+			// Use only the available previous words.
+			if count > i {
+				count = i
+			}
+
+			for j := i - count; j < i; j++ {
+				words[j] = strings.ToLower(words[j])
+			}
+
+			// Remove the marker.
+			words = append(words[:i], words[i+1:]...)
+			i--
 		}
-
-		// Not enough words before the marker: use the ones that exist.
-		if count > i {
-			count = i
-		}
-
-		for j := i - count; j < i; j++ {
-			words[j] = strings.ToLower(words[j])
-		}
-
-		words = append(words[:i], words[i+markerLen:]...)
-
-		if punctuation != "" && i > 0 {
-			words[i-1] += punctuation
-		}
-
-		i--
 	}
 
 	return strings.Join(words, " ")

@@ -1,63 +1,40 @@
 package main
 
-import "strings"
+import (
+	"strings"
+)
 
 func fixPunctuation(text string) string {
-	input := []byte(text)
-	output := make([]byte, 0, len(input))
+	var result strings.Builder
 
-	for i := 0; i < len(input); {
-		// Keep URLs unchanged.
-		if strings.HasPrefix(string(input[i:]), "https://") ||
-			strings.HasPrefix(string(input[i:]), "http://") {
-			for i < len(input) &&
-				input[i] != ' ' &&
-				input[i] != '\n' &&
-				input[i] != '\t' {
-				output = append(output, input[i])
-				i++
-			}
-			continue
-		}
+	for i := 0; i < len(text); i++ {
+		// If the character is punctuation, remove spaces before it.
+		if strings.ContainsRune(".,!?:;", rune(text[i])) {
+			current := result.String()
+			result.Reset()
+			result.WriteString(strings.TrimRight(current, " "))
 
-		// Handle punctuation.
-		if strings.ContainsRune(".,!?:;", rune(input[i])) {
-			// Remove spaces before punctuation.
-			for len(output) > 0 && output[len(output)-1] == ' ' {
-				output = output[:len(output)-1]
-			}
-
-			// Copy punctuation, including consecutive marks.
-			for i < len(input) &&
-				strings.ContainsRune(".,!?:;", rune(input[i])) {
-				output = append(output, input[i])
+			// Write consecutive punctuation marks.
+			for i < len(text) && strings.ContainsRune(".,!?:;", rune(text[i])) {
+				result.WriteByte(text[i])
 				i++
 			}
 
 			// Skip spaces after punctuation.
-			for i < len(input) && input[i] == ' ' {
+			for i < len(text) && text[i] == ' ' {
 				i++
 			}
 
-			// Add one space before the next word,
-			// except at the end of the line.
-			if i < len(input) {
-				output = append(output, ' ')
+			// Add one space after punctuation if text continues.
+			if i < len(text) {
+				result.WriteByte(' ')
 			}
-			continue
-		}
 
-		// Normalize repeated spaces.
-		if input[i] == ' ' {
-			if len(output) > 0 && output[len(output)-1] != ' ' {
-				output = append(output, ' ')
-			}
+			i--
 		} else {
-			output = append(output, input[i])
+			result.WriteByte(text[i])
 		}
-
-		i++
 	}
 
-	return strings.TrimRight(string(output), " ")
+	return strings.TrimRight(result.String(), " ")
 }

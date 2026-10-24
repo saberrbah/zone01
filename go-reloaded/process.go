@@ -12,16 +12,18 @@ func processText(text string) string {
 		trimmed := strings.TrimLeft(line, " \t")
 		indent := line[:len(line)-len(trimmed)]
 
-		// Punctuation and quotes first, so markers like (up, 2)
-		// count real words only. Markers are then applied in order.
+		// Normalize markers before processing them.
 		trimmed = normalizeMarkers(trimmed)
-		trimmed = fixPunctuation(trimmed)
-		trimmed = fixQuotes(trimmed)
+		
 		trimmed = convertHex(trimmed)
 		trimmed = convertBin(trimmed)
 		trimmed = convertUp(trimmed)
 		trimmed = convertLow(trimmed)
 		trimmed = convertCap(trimmed)
+
+		// Fix punctuation, quotes, and articles.
+		trimmed = fixPunctuation(trimmed)
+		trimmed = fixQuotes(trimmed)
 		trimmed = fixArticles(trimmed)
 
 		// A line starting with punctuation has no indentation.
@@ -32,7 +34,7 @@ func processText(text string) string {
 		lines[i] = indent + trimmed
 	}
 
-	// Punctuation at the start of a line belongs to the last word before it.
+	// Attach punctuation-only lines to the previous line.
 	result := []string{}
 	for _, line := range lines {
 		if len(result) > 0 &&

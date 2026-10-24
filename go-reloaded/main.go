@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 )
-
 
 func main() {
 	if len(os.Args) != 3 {
@@ -21,8 +21,14 @@ func main() {
 		return
 	}
 
+	if !strings.HasSuffix(outputFile, ".txt") {
+		fmt.Println("Error: output file must be a .txt file")
+		return
+	}
+
 	text := string(data)
 	text = processText(text)
+
 
 	err = os.WriteFile(outputFile, []byte(text), 0644)
 	if err != nil {
